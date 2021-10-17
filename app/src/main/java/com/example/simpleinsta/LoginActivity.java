@@ -23,6 +23,7 @@ public class LoginActivity extends AppCompatActivity {
     EditText ptUsername;
     EditText etPassword;
     Button btnLogin;
+    Button btnSignupActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +39,14 @@ public class LoginActivity extends AppCompatActivity {
         ptUsername = findViewById(R.id.ptUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
+        btnSignupActivity = findViewById(R.id.btnSignupActivity);
+
+        btnSignupActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reDirectSignUpActivity();
+            }
+        });
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,6 +60,11 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+    private void reDirectSignUpActivity() {
+        Intent i = new Intent(this, SignUpActivity.class);
+        startActivity(i);
+    }
+
     private void loginUser(String username, String password) {
         Log.i(TAG, "Logging In...");
 
@@ -61,7 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                 //means something is wrong
                 if (e != null) {
                     //Log.e(TAG, "Error logging in...", e);
-                    Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_LONG).show();
+                    Toast.makeText(LoginActivity.this, "Incorrect Username/Password", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
