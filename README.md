@@ -27,8 +27,11 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='wt1.gif' title='Video Walkthrough' width='250' alt='Video Walkthrough 1' />
-<img src='wt2.gif' title='Video Walkthrough' width='350' alt='Video Walkthrough 2' />
+<img src='wt1.gif' title='Video Walkthrough' width='350' alt='Video Walkthrough 1' />
+
+Proof of Successful Post:
+
+<img src='wt2.gif' title='Video Walkthrough' alt='Video Walkthrough 2' />
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
