@@ -24,7 +24,10 @@ import com.parse.ParseFile;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class PostActivity extends AppCompatActivity {
     public static final String TAG = "PostActivity";
@@ -37,8 +40,9 @@ public class PostActivity extends AppCompatActivity {
     private ImageButton ibPostCamera;
 
     private File photoFile;
-    private final String photoFileName = "image.jpg";
+    private final String photoFileName = "capture.jpg";
     private final String APP_TAG = "SimpleInsta";
+    private Object BitmapScaler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +76,7 @@ public class PostActivity extends AppCompatActivity {
     private void savePost(String description, ParseUser currentUser, File photoFile) {
         Post post = new Post();
 
+        //handle description
         if (description.isEmpty()){
             Toast.makeText(PostActivity.this, "Description Needed!", Toast.LENGTH_SHORT).show();
             return;
@@ -79,12 +84,23 @@ public class PostActivity extends AppCompatActivity {
             post.setDescription(description);
         }
 
+        //handle user
         post.setUser(currentUser);
 
+        //handle photo
+        if(photoFile == null || ivPostImage.getDrawable() == null){
+            Toast.makeText(PostActivity.this, "No Image Present", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        post.setImage(new ParseFile(photoFile));
+
+        //Now save to backend
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
                 if (e != null){
+                    Log.e(TAG, "error", e);
                     Toast.makeText(PostActivity.this, "Error Posting...", Toast.LENGTH_SHORT).show();
                 } else {
                     //Log.i(TAG, "Post Saved...");
@@ -96,13 +112,6 @@ public class PostActivity extends AppCompatActivity {
                 }
             }
         });
-
-        if(photoFile == null || ivPostImage.getDrawable() == null){
-            Toast.makeText(PostActivity.this, "No Image Present", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        post.setImage(new ParseFile(photoFile));
     }
 
     private void reDirectMainActivity() {
@@ -114,14 +123,13 @@ public class PostActivity extends AppCompatActivity {
 
     private void launchCamera() {
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        photoFile = getPhotoFileUri();
+        photoFile = getPhotoFileUri(photoFileName);
 
         Uri fileProvider = FileProvider.getUriForFile(PostActivity.this, "com.simpleinsta.fileprovider", photoFile);
 
         i.putExtra(MediaStore.EXTRA_OUTPUT, fileProvider);
 
         if(i.resolveActivity(getPackageManager()) != null){
-            Log.i(TAG, "tst");
             startActivityForResult(i, CAPTURE_IMAGE_REQUEST_CODE);
         }
     }
@@ -139,14 +147,14 @@ public class PostActivity extends AppCompatActivity {
         }
     }
 
-    private File getPhotoFileUri() {
+    private File getPhotoFileUri(String photoFileName) {
         File mediaStorgeDir = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), APP_TAG);
 
         if(!mediaStorgeDir.exists() && !mediaStorgeDir.mkdirs()){
             Log.d(TAG, "Failed to Create Directory");
         }
 
-        return new File(mediaStorgeDir.getPath() + File.separator + "image.jpg");
+        return new File(mediaStorgeDir.getPath() + File.separator + photoFileName);
     }
 
 }
