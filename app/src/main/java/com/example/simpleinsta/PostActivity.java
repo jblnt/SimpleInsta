@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,12 +33,12 @@ public class PostActivity extends AppCompatActivity {
     private ImageView ivPostImage;
     private EditText etDescription;
     private Button btnSubmit;
-    private Button btnCamera;
+    //private Button btnCamera;
+    private ImageButton ibPostCamera;
 
     private File photoFile;
     private final String photoFileName = "image.jpg";
     private final String APP_TAG = "SimpleInsta";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,7 @@ public class PostActivity extends AppCompatActivity {
         ivPostImage = findViewById(R.id.ivPostImage);
         etDescription = findViewById(R.id.etDescription);
         btnSubmit = findViewById(R.id.btnSubmit);
-        btnCamera = findViewById(R.id.btnCamera);
+        ibPostCamera = findViewById(R.id.ibPostCamera);
 
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,7 +60,7 @@ public class PostActivity extends AppCompatActivity {
             }
         });
 
-        btnCamera.setOnClickListener(new View.OnClickListener() {
+        ibPostCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 launchCamera();
