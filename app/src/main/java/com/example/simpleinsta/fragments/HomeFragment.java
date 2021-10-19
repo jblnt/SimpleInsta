@@ -2,13 +2,26 @@ package com.example.simpleinsta.fragments;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.simpleinsta.Post;
+import com.example.simpleinsta.PostAdapter;
 import com.example.simpleinsta.R;
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,6 +29,7 @@ import com.example.simpleinsta.R;
  * create an instance of this fragment.
  */
 public class HomeFragment extends Fragment {
+    public static final String TAG = "HomeFragment";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -62,5 +76,46 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
+    }
+
+    // --
+    //User defined logic for timeline using RecyclerView;
+    private RecyclerView rvTimeline;
+    private List<Post> posts = new ArrayList<>();
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+        PostAdapter adapter = new PostAdapter(getContext(), posts);
+
+        rvTimeline = view.findViewById(R.id.rvTimeline);
+        rvTimeline.setAdapter(adapter);
+        rvTimeline.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.setLimit(25);
+        query.orderByDescending("createdAt");
+        query.include("user.email");
+
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> objects, ParseException e) {
+                if (e != null){
+                    //something went wrong
+                    Log.e(TAG, "Query Went Wrong", e);
+                    return;
+                } else {
+                    Log.i(TAG, String.valueOf(objects.size()));
+                    posts.addAll(objects);
+
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+
+
     }
 }
