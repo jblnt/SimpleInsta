@@ -22,6 +22,7 @@ import com.example.simpleinsta.R;
 import com.example.simpleinsta.UserImgs;
 import com.example.simpleinsta.adapters.GridAdapter;
 import com.parse.FindCallback;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseQuery;
@@ -93,10 +94,10 @@ public class ProfileFragment extends Camera {
         super.onViewCreated(view, savedInstanceState);
 
         // --
-        ParseUser parseUser = ParseUser.getCurrentUser();
+        ParseUser currentUser = ParseUser.getCurrentUser();
 
         ivPostImage = view.findViewById(R.id.ivProfilePic);
-        loadProfileImage(ivPostImage);
+        loadProfileImage(ivPostImage, currentUser);
         ivPostImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,8 +107,9 @@ public class ProfileFragment extends Camera {
         });
 
         TextView tvProfileName = view.findViewById(R.id.tvProfileName);
-        tvProfileName.setText(ParseUser.getCurrentUser().getUsername());
+        tvProfileName.setText(currentUser.getUsername());
 
+        //Log out Logic
         ImageView ibExit =  view.findViewById(R.id.ibExit);
         ibExit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +120,7 @@ public class ProfileFragment extends Camera {
             }
         });
 
-        //User defined logic for timeline using RecyclerView;
+        //User defined logic for timeline using RecyclerView Grid Layout;
         List<Post> posts = new ArrayList<>();
         GridAdapter adapter = new GridAdapter(getContext(), posts);
 
@@ -126,12 +128,12 @@ public class ProfileFragment extends Camera {
         rvTimeline.setAdapter(adapter);
         rvTimeline.setLayoutManager(new GridLayoutManager(getContext(), 3));
 
-        //Display Grid Information
+        //Perform Query
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.setLimit(25);
         query.orderByDescending("createdAt");
         query.include("user.email");
-        query.whereEqualTo(Post.KEY_USER, ParseUser.getCurrentUser());
+        query.whereEqualTo(Post.KEY_USER, currentUser);
 
         query.findInBackground(new FindCallback<Post>() {
             @Override
@@ -149,9 +151,10 @@ public class ProfileFragment extends Camera {
         });
     }
 
-    private void loadProfileImage(ImageView ivPostImage) {
+    //--user defined
+    private void loadProfileImage(ImageView ivPostImage, ParseUser currentUser) {
         ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
-        query.whereEqualTo(UserImgs.KEY_USERNAME, ParseUser.getCurrentUser());
+        query.whereEqualTo(UserImgs.KEY_USERNAME, currentUser);
         query.findInBackground(new FindCallback<UserImgs>() {
             @Override
             public void done(List<UserImgs> objects, ParseException e) {
@@ -161,64 +164,4 @@ public class ProfileFragment extends Camera {
             }
         });
     }
-
-    //--user defined
-    /*
-    protected void savePost(File photoFile) {
-        ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
-        query.whereEqualTo(UserImgs.KEY_USERNAME, ParseUser.getCurrentUser());
-
-        query.findInBackground(new FindCallback<UserImgs>() {
-            @Override
-            public void done(List<UserImgs> objects, ParseException e) {
-                for (UserImgs userimg: objects){
-                    userimg.put(UserImgs.KEY_IMAGE, new ParseFile(photoFile));
-                    userimg.saveInBackground();
-                }
-            }
-        });
-
-        UserImgs userImgs = new UserImgs();
-
-        userImgs.setImage(new ParseFile(photoFile));
-        userImgs.setUser(currentUser);
-
-        if(photoFile == null || ivPostImage.getDrawable() == null){
-            Toast.makeText(getContext(), "No Image Present", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        userImgs.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "error", e);
-                    Toast.makeText(getContext(), "Error Posting...", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(getContext(), "Post Saved", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-    }
-
-    private void logOutUser() {
-        if(ParseUser.getCurrentUser() != null){
-            ParseUser.logOut();
-
-            //If you made it here, it means we can launch the main timeline;
-            //reDirectLoginActivity();
-            //finish();
-        }
-
-    }
-
-    private void reDirectLoginActivity() {
-        Intent i = new Intent(this, LoginActivity.class);
-        startActivity(i);
-
-        //Finishes the loginActivity and removed it from the activity stack;
-        finish();
-    }
-    */
 }

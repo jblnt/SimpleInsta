@@ -38,8 +38,7 @@ public class Camera extends Fragment {
     protected Button btnSubmit;
     protected ImageButton ibPostCamera;
 
-    //Picture Description for Posts
-    protected String description;
+    //handle saving method.
     protected String mode;
 
     //Bitmap Saving
@@ -48,15 +47,7 @@ public class Camera extends Fragment {
     protected final String photoFileName = "capture.jpg";
     protected final String APP_TAG = "SimpleInsta";
 
-    //user methods
-    /*
-    private void reDirectMainActivity() {
-        Intent i = new Intent(getContext(), MainActivity.class);
-        startActivity(i);
-
-        //finish();
-    }
-    */
+    //-- User methods
     protected void launchCamera() {
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         photoFile = getPhotoFileUri(photoFileName);
@@ -78,8 +69,9 @@ public class Camera extends Fragment {
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 ivPostImage.setImageBitmap(takenImage);
 
-                //auto Save Post; Override if needed.
+                //auto Save Post dependent 'mode'.
                 savePost();
+
             } else {
                 Toast.makeText(getContext(), "No Image Taken", Toast.LENGTH_SHORT).show();
             }
@@ -114,48 +106,4 @@ public class Camera extends Fragment {
             return;
         }
     }
-
-    /*
-    //protected void savePost(ParseUser currentUser, File photoFile) {
-    protected void savePost() {
-        Post post = new Post();
-
-        //handle description
-
-        if (description.isEmpty()) {
-            Toast.makeText(getContext(), "Description Needed!", Toast.LENGTH_SHORT).show();
-            return;
-        } else {
-            post.setDescription(description.trim());
-        }
-
-        //handle user
-        post.setUser(ParseUser.getCurrentUser());
-
-        //handle photo
-        if (photoFile == null || ivPostImage.getDrawable() == null) {
-            Toast.makeText(getContext(), "No Image Present", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        post.setImage(new ParseFile(photoFile));
-
-        //Now save to backend
-        post.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e != null) {
-                    Log.e(TAG, "error", e);
-                    Toast.makeText(getContext(), "Error Posting...", Toast.LENGTH_SHORT).show();
-                } else {
-                    //Log.i(TAG, "Post Saved...");
-                    Toast.makeText(getContext(), "Profile Saved", Toast.LENGTH_SHORT).show();
-                    //etDescription.setText("");
-                    //ivPostImage.setImageResource(0);
-                    //reDirectMainActivity();
-                }
-            }
-        });
-    }
-    */
 }
