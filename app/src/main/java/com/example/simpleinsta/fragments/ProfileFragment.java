@@ -38,7 +38,8 @@ import java.util.List;
  */
 public class ProfileFragment extends Camera {
     public static final String TAG = "ProfileFragment";
-    File fileFromCam;
+    //ImageButton btnAccount;
+    //File fileFromCam;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -71,8 +72,6 @@ public class ProfileFragment extends Camera {
         return fragment;
     }
 
-    //ImageButton btnAccount;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,6 +100,7 @@ public class ProfileFragment extends Camera {
         ivPostImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mode = "autosave";
                 launchCamera();
             }
         });
@@ -163,9 +163,8 @@ public class ProfileFragment extends Camera {
     }
 
     //--user defined
+    /*
     protected void savePost(File photoFile) {
-        Log.i(TAG, "Entered Save method");
-
         ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
         query.whereEqualTo(UserImgs.KEY_USERNAME, ParseUser.getCurrentUser());
 
@@ -179,7 +178,6 @@ public class ProfileFragment extends Camera {
             }
         });
 
-        /*
         UserImgs userImgs = new UserImgs();
 
         userImgs.setImage(new ParseFile(photoFile));
@@ -201,10 +199,9 @@ public class ProfileFragment extends Camera {
                 }
             }
         });
-        */
+
     }
 
-    /*
     private void logOutUser() {
         if(ParseUser.getCurrentUser() != null){
             ParseUser.logOut();

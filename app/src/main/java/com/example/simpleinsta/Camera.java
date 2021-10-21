@@ -19,16 +19,28 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.parse.FindCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
 import java.io.File;
+import java.util.List;
 
 public class Camera extends Fragment {
     protected static final String TAG = "Camera";
 
+    //UI Elements
     protected ImageView ivPostImage;
     protected EditText etDescription;
     protected Button btnSubmit;
-    //private Button btnCamera;
     protected ImageButton ibPostCamera;
+
+    //Picture Description for Posts
+    protected String description;
+    protected String mode;
 
     //Bitmap Saving
     public static final int CAPTURE_IMAGE_REQUEST_CODE = 23;
@@ -66,9 +78,8 @@ public class Camera extends Fragment {
                 Bitmap takenImage = BitmapFactory.decodeFile(photoFile.getAbsolutePath());
                 ivPostImage.setImageBitmap(takenImage);
 
-                //ParseUser currentUser = ParseUser.getCurrentUser();
-                //savePost("", currentUser, photoFile);
-
+                //auto Save Post; Override if needed.
+                savePost();
             } else {
                 Toast.makeText(getContext(), "No Image Taken", Toast.LENGTH_SHORT).show();
             }
@@ -85,12 +96,33 @@ public class Camera extends Fragment {
         return new File(mediaStorgeDir.getPath() + File.separator + photoFileName);
     }
 
+    protected void savePost(){
+        if(mode.equals("autosave")) {
+            ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
+            query.whereEqualTo(UserImgs.KEY_USERNAME, ParseUser.getCurrentUser());
+
+            query.findInBackground(new FindCallback<UserImgs>() {
+                @Override
+                public void done(List<UserImgs> objects, ParseException e) {
+                    for (UserImgs userimg: objects){
+                        userimg.put(UserImgs.KEY_IMAGE, new ParseFile(photoFile));
+                        userimg.saveInBackground();
+                    }
+                }
+            });
+        } else {
+            return;
+        }
+    }
+
     /*
-    protected void savePost(String description, ParseUser currentUser, File photoFile) {
+    //protected void savePost(ParseUser currentUser, File photoFile) {
+    protected void savePost() {
         Post post = new Post();
 
         //handle description
-        if (description.isEmpty()){
+
+        if (description.isEmpty()) {
             Toast.makeText(getContext(), "Description Needed!", Toast.LENGTH_SHORT).show();
             return;
         } else {
@@ -98,10 +130,10 @@ public class Camera extends Fragment {
         }
 
         //handle user
-        post.setUser(currentUser);
+        post.setUser(ParseUser.getCurrentUser());
 
         //handle photo
-        if(photoFile == null || ivPostImage.getDrawable() == null){
+        if (photoFile == null || ivPostImage.getDrawable() == null) {
             Toast.makeText(getContext(), "No Image Present", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -112,14 +144,14 @@ public class Camera extends Fragment {
         post.saveInBackground(new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e != null){
+                if (e != null) {
                     Log.e(TAG, "error", e);
                     Toast.makeText(getContext(), "Error Posting...", Toast.LENGTH_SHORT).show();
                 } else {
                     //Log.i(TAG, "Post Saved...");
-                    Toast.makeText(getContext(), "Post Saved", Toast.LENGTH_SHORT).show();
-                    etDescription.setText("");
-                    ivPostImage.setImageResource(0);
+                    Toast.makeText(getContext(), "Profile Saved", Toast.LENGTH_SHORT).show();
+                    //etDescription.setText("");
+                    //ivPostImage.setImageResource(0);
                     //reDirectMainActivity();
                 }
             }

@@ -28,6 +28,7 @@ import android.widget.Toast;
 import com.example.simpleinsta.Camera;
 import com.example.simpleinsta.Post;
 import com.example.simpleinsta.R;
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseUser;
@@ -119,6 +120,7 @@ public class PostFragment extends Camera {
         ibPostCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                mode = "no_autosave";
                 launchCamera();
             }
         });
@@ -126,16 +128,17 @@ public class PostFragment extends Camera {
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String description = etDescription.getText().toString();
+                description = etDescription.getText().toString();
                 ParseUser currentUser =  ParseUser.getCurrentUser();
 
-                savePost(description,currentUser, photoFile);
+                savePost(description, currentUser, photoFile);
             }
         });
     }
 
     //user methods
-    private void savePost(String description, ParseUser currentUser, File photoFile) {
+    //private void savePost(String description, ParseUser currentUser, File photoFile) {
+    public void savePost(String description, ParseUser user, File photo) {
         Post post = new Post();
 
         //handle description
@@ -147,15 +150,15 @@ public class PostFragment extends Camera {
         }
 
         //handle user
-        post.setUser(currentUser);
+        post.setUser(user);
 
         //handle photo
-        if(photoFile == null || ivPostImage.getDrawable() == null){
+        if(photo == null || ivPostImage.getDrawable() == null){
             Toast.makeText(getContext(), "No Image Present", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        post.setImage(new ParseFile(photoFile));
+        post.setImage(new ParseFile(photo));
 
         //Now save to backend
         post.saveInBackground(new SaveCallback() {
@@ -169,7 +172,6 @@ public class PostFragment extends Camera {
                     Toast.makeText(getContext(), "Post Saved", Toast.LENGTH_SHORT).show();
                     etDescription.setText("");
                     ivPostImage.setImageResource(0);
-
                     //reDirectMainActivity();
                 }
             }
