@@ -158,8 +158,10 @@ public class ProfileFragment extends Camera {
         query.findInBackground(new FindCallback<UserImgs>() {
             @Override
             public void done(List<UserImgs> objects, ParseException e) {
-                for (UserImgs userimg: objects){
-                    Glide.with(requireContext()).load(userimg.getImage().getUrl()).into(ivPostImage);
+                if ( e != null) {
+                    Log.e(TAG, "Error Loading Profile Image", e);
+                } else {
+                    Glide.with(requireContext()).load(objects.get(0).getImage().getUrl()).into(ivPostImage);
                 }
             }
         });

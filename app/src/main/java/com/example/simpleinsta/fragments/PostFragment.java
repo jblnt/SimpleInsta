@@ -25,16 +25,21 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.example.simpleinsta.Camera;
 import com.example.simpleinsta.Post;
 import com.example.simpleinsta.R;
+import com.example.simpleinsta.UserImgs;
+import com.parse.FindCallback;
 import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -131,14 +136,27 @@ public class PostFragment extends Camera {
                 String description = etDescription.getText().toString();
                 ParseUser currentUser =  ParseUser.getCurrentUser();
 
-                savePost(description, currentUser, photoFile);
+                ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
+                query.whereEqualTo(UserImgs.KEY_USERNAME, currentUser);
+                query.findInBackground(new FindCallback<UserImgs>() {
+                    @Override
+                    public void done(List<UserImgs> userImg, ParseException e) {
+                        if (e != null) {
+                            Log.e(TAG, "Error Gettig Query", e);
+                        } else {
+                            savePost(description, currentUser, photoFile, userImg.get(0));
+                        }
+                    }
+                });
             }
         });
     }
 
     // -- User methods
-    private void savePost(String description, ParseUser user, File photo) {
+    private void savePost(String description, ParseUser user, File photo, UserImgs userImg) {
         Post post = new Post();
+
+        post.setUserImg(userImg);
 
         //handle description
         if (description.isEmpty()){

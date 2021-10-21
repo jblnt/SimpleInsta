@@ -95,6 +95,7 @@ public class HomeFragment extends Fragment {
         query.setLimit(25);
         query.orderByDescending("createdAt");
         query.include("user.email");
+        query.include("userimgs.profilepic");
 
         query.findInBackground(new FindCallback<Post>() {
             @Override
@@ -106,7 +107,6 @@ public class HomeFragment extends Fragment {
                 } else {
                     Log.i(TAG, String.valueOf(objects.size()));
                     posts.addAll(objects);
-
                 }
                 adapter.notifyDataSetChanged();
             }

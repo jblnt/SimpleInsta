@@ -22,6 +22,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private Context context;
     private List<Post> posts;
 
+    private ImageView ivTimelimeProfilePic;
     private TextView tvUsername;
     private ImageView ivImage;
     private TextView tvDescription;
@@ -51,6 +52,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         tvUsername.setText(post.getUser().getUsername());
         tvDescription.setText(post.getDescription());
         Glide.with(context).load(post.getImage().getUrl()).into(ivImage);
+        Glide.with(context).load(post.getUserImg().getParseFile("profilepic").getUrl()).into(ivTimelimeProfilePic);
     }
 
     @Override
@@ -59,12 +61,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     }
 
     // --
-
     //Define Viewholder to be used by Adapter
     public class ViewHolder extends RecyclerView.ViewHolder{
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            ivTimelimeProfilePic = itemView.findViewById(R.id.ivTimelimeProfilePic);
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivImage = itemView.findViewById(R.id.ivImage);
             tvDescription = itemView.findViewById(R.id.tvDescription);
