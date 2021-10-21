@@ -25,9 +25,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.simpleinsta.MainActivity;
+import com.example.simpleinsta.Camera;
 import com.example.simpleinsta.Post;
-import com.example.simpleinsta.PostActivity;
 import com.example.simpleinsta.R;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -35,14 +34,13 @@ import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
 import java.io.File;
-import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link PostFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class PostFragment extends Fragment {
+public class PostFragment extends Camera {
     public static final String TAG = "PostFragment";
 
     // TODO: Rename parameter arguments, choose names that match
@@ -79,6 +77,7 @@ public class PostFragment extends Fragment {
     //User Defined --
 
     //UI elements
+    /*
     private ImageView ivPostImage;
     private EditText etDescription;
     private Button btnSubmit;
@@ -90,7 +89,7 @@ public class PostFragment extends Fragment {
     private File photoFile;
     private final String photoFileName = "capture.jpg";
     private final String APP_TAG = "SimpleInsta";
-    private Object BitmapScaler;
+     */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -117,6 +116,13 @@ public class PostFragment extends Fragment {
         btnSubmit = view.findViewById(R.id.btnSubmit);
         ibPostCamera = view.findViewById(R.id.ibPostCamera);
 
+        ibPostCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                launchCamera();
+            }
+        });
+
         btnSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,13 +130,6 @@ public class PostFragment extends Fragment {
                 ParseUser currentUser =  ParseUser.getCurrentUser();
 
                 savePost(description,currentUser, photoFile);
-            }
-        });
-
-        ibPostCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                launchCamera();
             }
         });
     }
@@ -144,7 +143,7 @@ public class PostFragment extends Fragment {
             Toast.makeText(getContext(), "Description Needed!", Toast.LENGTH_SHORT).show();
             return;
         } else {
-            post.setDescription(description);
+            post.setDescription(description.trim());
         }
 
         //handle user
@@ -184,7 +183,7 @@ public class PostFragment extends Fragment {
 
         //finish();
     }
-    */
+
 
     private void launchCamera() {
         Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -221,5 +220,7 @@ public class PostFragment extends Fragment {
 
         return new File(mediaStorgeDir.getPath() + File.separator + photoFileName);
     }
+
+     */
 
 }

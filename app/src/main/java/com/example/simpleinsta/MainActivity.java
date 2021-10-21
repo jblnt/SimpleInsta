@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.action_post:
                         fragment = postFragment;
                         break;
-                    case R.id.action_profile:
+                    //case R.id.action_profile:
                     default:
                         fragment = profileFragment;
                         break;

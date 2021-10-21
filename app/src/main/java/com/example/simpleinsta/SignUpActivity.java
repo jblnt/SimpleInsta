@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.parse.ParseException;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 public class SignUpActivity extends AppCompatActivity {
@@ -45,6 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
 
                 if(password.equals(passwordCheck)) {
                     registerUser(email, username, password);
+
                 } else {
                     Toast.makeText(SignUpActivity.this, "Password Must Match", Toast.LENGTH_SHORT).show();
                 }
@@ -68,13 +70,31 @@ public class SignUpActivity extends AppCompatActivity {
                 } else {
                     Toast.makeText(SignUpActivity.this, "Success!", Toast.LENGTH_LONG).show();
 
+                    saveProfilePic();
+
                     Intent i = new Intent(SignUpActivity.this, LoginActivity.class);
                     startActivity(i);
                     finish();
                 }
             }
         });
-
     }
 
+    private void saveProfilePic() {
+        UserImgs userImgs = new UserImgs();
+
+        userImgs.setUser(ParseUser.getCurrentUser());
+
+        userImgs.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e != null) {
+                    Log.e(TAG, "error", e);
+                    Toast.makeText(SignUpActivity.this, "Error Posting...", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(SignUpActivity.this, "Post Saved", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
 }

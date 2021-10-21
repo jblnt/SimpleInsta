@@ -14,8 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.simpleinsta.Post;
-import com.example.simpleinsta.PostAdapter;
 import com.example.simpleinsta.R;
+import com.example.simpleinsta.adapters.PostAdapter;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseQuery;
@@ -78,22 +78,18 @@ public class HomeFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
 
-    // --
-    //User defined logic for timeline using RecyclerView;
-    private RecyclerView rvTimeline;
-    private List<Post> posts = new ArrayList<>();
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        List<Post> posts = new ArrayList<>();
         PostAdapter adapter = new PostAdapter(getContext(), posts);
 
-        rvTimeline = view.findViewById(R.id.rvTimeline);
+        // --
+        //User defined logic for timeline using RecyclerView;
+        RecyclerView rvTimeline = view.findViewById(R.id.rvTimeline);
         rvTimeline.setAdapter(adapter);
         rvTimeline.setLayoutManager(new LinearLayoutManager(getContext()));
-
 
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.setLimit(25);
@@ -115,7 +111,5 @@ public class HomeFragment extends Fragment {
                 adapter.notifyDataSetChanged();
             }
         });
-
-
     }
 }

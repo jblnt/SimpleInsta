@@ -1,4 +1,4 @@
-package com.example.simpleinsta;
+package com.example.simpleinsta.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -12,10 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.simpleinsta.Post;
+import com.example.simpleinsta.R;
 
 import java.util.List;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
+    private static final String TAG = "PostAdapter";
     private Context context;
     private List<Post> posts;
 
@@ -42,10 +45,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         //Get a post at position and then bind the data;
         Post post = posts.get(position);
 
+        //Log.i(TAG, context.getClass().getSimpleName());
+
         //perform binding
         tvUsername.setText(post.getUser().getUsername());
         tvDescription.setText(post.getDescription());
-
         Glide.with(context).load(post.getImage().getUrl()).into(ivImage);
     }
 
