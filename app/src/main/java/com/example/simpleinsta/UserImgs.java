@@ -8,7 +8,7 @@ import com.parse.ParseUser;
 @ParseClassName("UserImgs")
 public class UserImgs extends ParseObject {
     public static final String KEY_IMAGE = "profilepic";
-    public static final String KEY_USERNAME = "username";
+    public static final String KEY_USER = "user";
 
     public ParseFile getImage() {
         return getParseFile(KEY_IMAGE);
@@ -19,10 +19,10 @@ public class UserImgs extends ParseObject {
     }
 
     public ParseUser getUser() {
-        return getParseUser(KEY_USERNAME);
+        return getParseUser(KEY_USER);
     }
 
     public void setUser(ParseUser user) {
-        put(KEY_USERNAME, user);
+        put(KEY_USER, user);
     }
 }

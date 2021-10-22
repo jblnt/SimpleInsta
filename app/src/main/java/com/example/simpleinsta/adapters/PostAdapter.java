@@ -44,9 +44,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull PostAdapter.ViewHolder holder, int position) {
         //Get a post at position and then bind the data;
+        Log.i(TAG, String.valueOf(position) + "|" +posts.get(position).getDescription());
         Post post = posts.get(position);
-
-        //Log.i(TAG, context.getClass().getSimpleName());
 
         //perform binding
         tvUsername.setText(post.getUser().getUsername());
@@ -71,5 +70,16 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             ivImage = itemView.findViewById(R.id.ivImage);
             tvDescription = itemView.findViewById(R.id.tvDescription);
         }
+    }
+
+    //Swipe Refresh methods
+    public void clear() {
+        posts.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addAll(List<Post> list){
+        posts.addAll(list);
+        notifyDataSetChanged();
     }
 }

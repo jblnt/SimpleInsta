@@ -12,6 +12,7 @@ public class ParseApplication extends Application {
 
         ParseObject.registerSubclass(Post.class);
         ParseObject.registerSubclass(UserImgs.class);
+        ParseObject.registerSubclass(Comment.class);
 
         Parse.initialize(new Parse.Configuration.Builder(this)
             .applicationId("cDHeLOaLhDE6oOGcclwa4ViHdqc2M3MsHUb2fy2g")

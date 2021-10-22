@@ -1,5 +1,6 @@
 package com.example.simpleinsta.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.simpleinsta.Camera;
+import com.example.simpleinsta.LoginActivity;
 import com.example.simpleinsta.Post;
 import com.example.simpleinsta.R;
 import com.example.simpleinsta.UserImgs;
@@ -116,6 +118,8 @@ public class ProfileFragment extends Camera {
             public void onClick(View v) {
                 if(ParseUser.getCurrentUser() != null) {
                     ParseUser.logOut();
+
+                    logout();
                 }
             }
         });
@@ -151,10 +155,15 @@ public class ProfileFragment extends Camera {
         });
     }
 
+    private void logout() {
+        Intent i =  new Intent(requireContext(), LoginActivity.class);
+        startActivity(i);
+    }
+
     //--user defined
     private void loadProfileImage(ImageView ivPostImage, ParseUser currentUser) {
         ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
-        query.whereEqualTo(UserImgs.KEY_USERNAME, currentUser);
+        query.whereEqualTo(UserImgs.KEY_USER, currentUser);
         query.findInBackground(new FindCallback<UserImgs>() {
             @Override
             public void done(List<UserImgs> objects, ParseException e) {

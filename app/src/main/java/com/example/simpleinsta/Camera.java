@@ -91,7 +91,7 @@ public class Camera extends Fragment {
     protected void savePost(){
         if(mode.equals("autosave")) {
             ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
-            query.whereEqualTo(UserImgs.KEY_USERNAME, ParseUser.getCurrentUser());
+            query.whereEqualTo(UserImgs.KEY_USER, ParseUser.getCurrentUser());
 
             query.findInBackground(new FindCallback<UserImgs>() {
                 @Override

@@ -137,7 +137,7 @@ public class PostFragment extends Camera {
                 ParseUser currentUser =  ParseUser.getCurrentUser();
 
                 ParseQuery<UserImgs> query = ParseQuery.getQuery(UserImgs.class);
-                query.whereEqualTo(UserImgs.KEY_USERNAME, currentUser);
+                query.whereEqualTo(UserImgs.KEY_USER, currentUser);
                 query.findInBackground(new FindCallback<UserImgs>() {
                     @Override
                     public void done(List<UserImgs> userImg, ParseException e) {

@@ -55,15 +55,4 @@
         android:textSize="10sp"
         tools:text="25 minutes ago" />
 
-    <EditText
-        android:id="@+id/etComment"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tvTimestamp"
-        android:minHeight="48dp"
-        android:hint="Comment"
-        android:layout_marginTop="5dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"/>
-
 </RelativeLayout>

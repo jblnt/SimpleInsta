@@ -7,6 +7,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,9 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
+    PostAdapter adapter;
+    RecyclerView rvTimeline;
+    List<Post> listPosts;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -62,6 +66,10 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
+    //private SwipeRefreshLayout swipeContainer;
+    //private PostAdapter adapter;
+    //private List<Post> posts;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,14 +91,30 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         List<Post> posts = new ArrayList<>();
-        PostAdapter adapter = new PostAdapter(getContext(), posts);
+
+        //grab data before setting up data
+        grabData();
+        Log.i(TAG, String.valueOf(listPosts.size()));
+
+        adapter = new PostAdapter(getContext(), posts);
 
         // --
         //User defined logic for timeline using RecyclerView;
-        RecyclerView rvTimeline = view.findViewById(R.id.rvTimeline);
-        rvTimeline.setAdapter(adapter);
+        rvTimeline = view.findViewById(R.id.rvTimeline);
         rvTimeline.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvTimeline.setAdapter(adapter);
 
+        //swipe refresh methods
+        SwipeRefreshLayout swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.i(TAG, "Updating Via Swipe");
+                updateTimeline(adapter, swipeContainer);
+            }
+        });
+
+         /*
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.setLimit(25);
         query.orderByDescending("createdAt");
@@ -109,6 +133,56 @@ public class HomeFragment extends Fragment {
                     posts.addAll(objects);
                 }
                 adapter.notifyDataSetChanged();
+            }
+        });
+        */
+    }
+
+    private void grabData() {
+
+        Log.i(TAG, "grabdata timeline");
+
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.setLimit(20);
+        query.orderByDescending("createdAt");
+        query.include("user.email");
+        query.include("userimgs.profilepic");
+
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> objects, ParseException e) {
+                if (e != null){
+                    //something went wrong
+                    Log.e(TAG, "Query Went Wrong", e);
+                } else {
+                    listPosts.addAll(objects);
+                }
+            }
+        });
+    }
+
+    private void updateTimeline(PostAdapter postAdapter, SwipeRefreshLayout srlContainer) {
+        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
+        query.setLimit(20);
+        query.orderByDescending("createdAt");
+        query.include("user.email");
+        query.include("userimgs.profilepic");
+
+        query.findInBackground(new FindCallback<Post>() {
+            @Override
+            public void done(List<Post> objects, ParseException e) {
+                if (e != null){
+                    //something went wrong
+                    Log.e(TAG, "Query Went Wrong", e);
+                } else {
+                    //Log.i(TAG, String.valueOf(objects.size()));
+                    postAdapter.clear();
+                    postAdapter.addAll(objects);
+
+                    srlContainer.setRefreshing(false);
+
+                    postAdapter.notifyDataSetChanged();
+                }
             }
         });
     }
