@@ -19,6 +19,7 @@ import java.util.List;
 
 public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     private static final String TAG = "GridAdapter";
+
     private Context context;
     private List<Post> posts;
 

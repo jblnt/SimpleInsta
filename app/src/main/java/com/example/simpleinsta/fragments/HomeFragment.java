@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.simpleinsta.Post;
 import com.example.simpleinsta.R;
@@ -31,9 +32,11 @@ import java.util.List;
  */
 public class HomeFragment extends Fragment {
     public static final String TAG = "HomeFragment";
-    PostAdapter adapter;
-    RecyclerView rvTimeline;
-    List<Post> listPosts;
+
+    private RecyclerView rvTimeline;
+    private SwipeRefreshLayout swipeContainer;
+    List<Post> feed;
+    private PostAdapter adapter;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -66,10 +69,6 @@ public class HomeFragment extends Fragment {
         return fragment;
     }
 
-    //private SwipeRefreshLayout swipeContainer;
-    //private PostAdapter adapter;
-    //private List<Post> posts;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,8 +79,7 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_home, container, false);
     }
@@ -90,13 +88,12 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        List<Post> posts = new ArrayList<>();
+        //initialize adapter
+        feed = new ArrayList<>();
+        adapter = new PostAdapter(getContext(), feed);
 
-        //grab data before setting up data
+        //grab initial data
         grabData();
-        Log.i(TAG, String.valueOf(listPosts.size()));
-
-        adapter = new PostAdapter(getContext(), posts);
 
         // --
         //User defined logic for timeline using RecyclerView;
@@ -105,43 +102,17 @@ public class HomeFragment extends Fragment {
         rvTimeline.setAdapter(adapter);
 
         //swipe refresh methods
-        SwipeRefreshLayout swipeContainer = view.findViewById(R.id.swipeContainer);
+        swipeContainer = (SwipeRefreshLayout) view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.i(TAG, "Updating Via Swipe");
-                updateTimeline(adapter, swipeContainer);
+                Toast.makeText(requireContext(), "Updating", Toast.LENGTH_SHORT).show();
+                updateTimeline();
             }
         });
-
-         /*
-        ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
-        query.setLimit(25);
-        query.orderByDescending("createdAt");
-        query.include("user.email");
-        query.include("userimgs.profilepic");
-
-        query.findInBackground(new FindCallback<Post>() {
-            @Override
-            public void done(List<Post> objects, ParseException e) {
-                if (e != null){
-                    //something went wrong
-                    Log.e(TAG, "Query Went Wrong", e);
-                    return;
-                } else {
-                    Log.i(TAG, String.valueOf(objects.size()));
-                    posts.addAll(objects);
-                }
-                adapter.notifyDataSetChanged();
-            }
-        });
-        */
     }
 
     private void grabData() {
-
-        Log.i(TAG, "grabdata timeline");
-
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.setLimit(20);
         query.orderByDescending("createdAt");
@@ -155,13 +126,13 @@ public class HomeFragment extends Fragment {
                     //something went wrong
                     Log.e(TAG, "Query Went Wrong", e);
                 } else {
-                    listPosts.addAll(objects);
+                    adapter.addFresh(objects);
                 }
             }
         });
     }
 
-    private void updateTimeline(PostAdapter postAdapter, SwipeRefreshLayout srlContainer) {
+    private void updateTimeline() {
         ParseQuery<Post> query = ParseQuery.getQuery(Post.class);
         query.setLimit(20);
         query.orderByDescending("createdAt");
@@ -176,12 +147,11 @@ public class HomeFragment extends Fragment {
                     Log.e(TAG, "Query Went Wrong", e);
                 } else {
                     //Log.i(TAG, String.valueOf(objects.size()));
-                    postAdapter.clear();
-                    postAdapter.addAll(objects);
+                    adapter.clear();
+                    adapter.addFresh(objects);
 
-                    srlContainer.setRefreshing(false);
-
-                    postAdapter.notifyDataSetChanged();
+                    swipeContainer.setRefreshing(false);
+                    //adapter.notifyDataSetChanged();
                 }
             }
         });

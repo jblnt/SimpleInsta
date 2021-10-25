@@ -83,20 +83,6 @@ public class PostFragment extends Camera {
     //User Defined --
 
     //UI elements
-    /*
-    private ImageView ivPostImage;
-    private EditText etDescription;
-    private Button btnSubmit;
-    //private Button btnCamera;
-    private ImageButton ibPostCamera;
-
-    //Bitmap Saving
-    public static final int CAPTURE_IMAGE_REQUEST_CODE = 23;
-    private File photoFile;
-    private final String photoFileName = "capture.jpg";
-    private final String APP_TAG = "SimpleInsta";
-     */
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -142,7 +128,7 @@ public class PostFragment extends Camera {
                     @Override
                     public void done(List<UserImgs> userImg, ParseException e) {
                         if (e != null) {
-                            Log.e(TAG, "Error Gettig Query", e);
+                            Log.e(TAG, "Error Querying User Image", e);
                         } else {
                             savePost(description, currentUser, photoFile, userImg.get(0));
                         }
@@ -160,7 +146,7 @@ public class PostFragment extends Camera {
 
         //handle description
         if (description.isEmpty()){
-            Toast.makeText(getContext(), "Description Needed!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Description Required", Toast.LENGTH_SHORT).show();
             return;
         } else {
             post.setDescription(description.trim());
@@ -182,7 +168,7 @@ public class PostFragment extends Camera {
             @Override
             public void done(ParseException e) {
                 if (e != null){
-                    Log.e(TAG, "error", e);
+                    //Log.e(TAG, "error", e);
                     Toast.makeText(getContext(), "Error Posting...", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(getContext(), "Post Saved", Toast.LENGTH_SHORT).show();

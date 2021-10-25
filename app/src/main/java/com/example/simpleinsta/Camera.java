@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPoolAdapter;
 import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -31,6 +32,7 @@ import java.util.List;
 
 public class Camera extends Fragment {
     protected static final String TAG = "Camera";
+    private static final int PP_WIDTH = 400;
 
     //UI Elements
     protected ImageView ivPostImage;
@@ -96,6 +98,7 @@ public class Camera extends Fragment {
             query.findInBackground(new FindCallback<UserImgs>() {
                 @Override
                 public void done(List<UserImgs> objects, ParseException e) {
+
                     for (UserImgs userimg: objects){
                         userimg.put(UserImgs.KEY_IMAGE, new ParseFile(photoFile));
                         userimg.saveInBackground();

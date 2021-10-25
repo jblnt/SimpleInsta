@@ -7,29 +7,39 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.simpleinsta.Post;
 import com.example.simpleinsta.R;
+import com.example.simpleinsta.parseobjects.Likes;
+import com.parse.ParseException;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     private static final String TAG = "PostAdapter";
+
     private Context context;
-    private List<Post> posts;
+    private List<Post> feed;
 
-    private ImageView ivTimelimeProfilePic;
-    private TextView tvUsername;
-    private ImageView ivImage;
-    private TextView tvDescription;
-
-    public PostAdapter (Context context, List<Post> posts){
+    public PostAdapter(Context context, List<Post> feed){
         this.context = context;
-        this.posts = posts;
+        this.feed = feed;
     }
 
     @NonNull
@@ -44,24 +54,46 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull PostAdapter.ViewHolder holder, int position) {
         //Get a post at position and then bind the data;
-        Log.i(TAG, String.valueOf(position) + "|" +posts.get(position).getDescription());
-        Post post = posts.get(position);
-
-        //perform binding
-        tvUsername.setText(post.getUser().getUsername());
-        tvDescription.setText(post.getDescription());
-        Glide.with(context).load(post.getImage().getUrl()).into(ivImage);
-        Glide.with(context).load(post.getUserImg().getParseFile("profilepic").getUrl()).into(ivTimelimeProfilePic);
+        Post post = feed.get(position);
+        holder.bind(post);
     }
 
     @Override
     public int getItemCount() {
-        return posts.size();
+        return feed.size();
     }
+
+    // -- Swipe Refresh methods
+    public void clear() {
+        feed.clear();
+        notifyDataSetChanged();
+    }
+
+    public void addFresh(List<Post> list){
+        feed.addAll(list);
+        //notifyItemRangeInserted(0, posts.size());
+        notifyDataSetChanged();
+    }
+
+    //Donno why this worked but fixed items being updated while
+    //scrolling...
+    /*
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+    */
 
     // --
     //Define Viewholder to be used by Adapter
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private ImageView ivTimelimeProfilePic;
+        private TextView tvUsername;
+        private ImageView ivImage;
+        private TextView tvDescription;
+        private ImageView ivLikeButton;
+        private TextView tvTimestamp;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
@@ -69,17 +101,52 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             tvUsername = itemView.findViewById(R.id.tvUsername);
             ivImage = itemView.findViewById(R.id.ivImage);
             tvDescription = itemView.findViewById(R.id.tvDescription);
+
+            ivLikeButton = itemView.findViewById(R.id.ivLikeButton);
+            ivLikeButton.setOnClickListener(this);
+
+            tvTimestamp = itemView.findViewById(R.id.tvTimestamp);
+        }
+
+        public void bind(Post post) {
+            Date postDate = post.getCreatedAt();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm dd.MMM.yyyy z", Locale.ENGLISH);
+
+            //perform binding
+            tvUsername.setText(post.getUser().getUsername());
+            tvDescription.setText(post.getDescription());
+            tvTimestamp.setText(simpleDateFormat.format(postDate));
+            Glide.with(context).load(post.getImage().getUrl()).into(ivImage);
+            Glide.with(context).load(post.getUserImg().getParseFile("profilepic").getUrl()).into(ivTimelimeProfilePic);
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAbsoluteAdapterPosition();
+            if(position !=  RecyclerView.NO_POSITION) {
+                Post p = feed.get(position);
+
+                Toast.makeText(context, "Like Feature Coming Soon", Toast.LENGTH_SHORT).show();
+
+                //likeButtonClicked(p);
+            }
         }
     }
 
-    //Swipe Refresh methods
-    public void clear() {
-        posts.clear();
-        notifyDataSetChanged();
-    }
+    private void likeButtonClicked(Post p) {
+        Likes like = new Likes();
 
-    public void addAll(List<Post> list){
-        posts.addAll(list);
-        notifyDataSetChanged();
+        like.setPost(p);
+        like.setUser(ParseUser.getCurrentUser());
+
+        like.saveInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e != null){
+                    Log.e(TAG, "Saving Like Error", e);
+                }
+            }
+        });
+
     }
 }
