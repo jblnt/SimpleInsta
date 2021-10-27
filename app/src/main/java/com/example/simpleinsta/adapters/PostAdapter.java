@@ -1,6 +1,9 @@
 package com.example.simpleinsta.adapters;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +19,7 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.example.simpleinsta.Like;
 import com.example.simpleinsta.Post;
 import com.example.simpleinsta.R;
 import com.example.simpleinsta.parseobjects.Likes;
@@ -71,18 +75,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
 
     public void addFresh(List<Post> list){
         feed.addAll(list);
-        //notifyItemRangeInserted(0, posts.size());
         notifyDataSetChanged();
     }
-
-    //Donno why this worked but fixed items being updated while
-    //scrolling...
-    /*
-    @Override
-    public int getItemViewType(int position) {
-        return position;
-    }
-    */
 
     // --
     //Define Viewholder to be used by Adapter
@@ -93,6 +87,8 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
         private TextView tvDescription;
         private ImageView ivLikeButton;
         private TextView tvTimestamp;
+
+        private Like like;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -112,6 +108,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             Date postDate = post.getCreatedAt();
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm dd.MMM.yyyy z", Locale.ENGLISH);
 
+            like = new Like();
+            if ( like.getLikeStatus(post, ParseUser.getCurrentUser()) ) {
+                ivLikeButton.setPressed(true);
+            }
+
             //perform binding
             tvUsername.setText(post.getUser().getUsername());
             tvDescription.setText(post.getDescription());
@@ -125,10 +126,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
             int position = getAbsoluteAdapterPosition();
             if(position !=  RecyclerView.NO_POSITION) {
                 Post p = feed.get(position);
-
                 Toast.makeText(context, "Like Feature Coming Soon", Toast.LENGTH_SHORT).show();
 
-                //likeButtonClicked(p);
+                likeButtonClicked(p);
             }
         }
     }
@@ -147,6 +147,5 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolder> {
                 }
             }
         });
-
     }
 }

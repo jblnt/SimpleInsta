@@ -23,8 +23,6 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     private Context context;
     private List<Post> posts;
 
-    private ImageView ivGridItem;
-
     public GridAdapter(Context context, List<Post> posts) {
         this.context = context;
         this.posts = posts;
@@ -41,9 +39,7 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Post post = posts.get(position);
-        Glide.with(context).load(post.getImage().getUrl()).into(ivGridItem);
-
-        //Log.i(TAG, context.getClass().getSimpleName());
+        holder.bind(post);
     }
 
     @Override
@@ -52,10 +48,17 @@ public class GridAdapter extends RecyclerView.Adapter<GridAdapter.ViewHolder> {
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
+
+        private ImageView ivGridItem;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             ivGridItem = itemView.findViewById(R.id.ivGridItem);
+        }
+
+        public void bind(Post post) {
+            Glide.with(context).load(post.getImage().getUrl()).into(ivGridItem);
         }
     }
 }
